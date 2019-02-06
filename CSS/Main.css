@@ -1,3 +1,33 @@
-.button-hover:hover {
-    background-color: aqua;
+html {
+    background: url('../IMG/Background.jpg');
+}
+
+body,html {
+    height: 100%;
+    font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+    padding: 28px 84px 0;
+}
+
+.background {
+    padding: 70px 116px 50px;
+    background: white;
+}
+
+.blue {
+    color: #01B4DC;
+}
+
+#start {
+    margin-top: 10px;
+}
+
+#intro {
+    display: block;
+}
+
+#questions {
+    display: none;
 }
