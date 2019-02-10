@@ -1,5 +1,6 @@
 // variables
 var choices = [];
+var selectedParties = [];
 var page;
 var startPage = document.getElementById('intro');
 var questionPage = document.getElementById('questions');
@@ -33,31 +34,36 @@ function loadIntro(){
     backbtn.style.display = "none";
 }
 
-function loadSelectParties(){
+function loadSelectPartiesPage(){
     questionPage.style.display = "none";
     selectPartiesPage.style.display = "block";
     loadParties();
 }
 
 function loadStatement(){
-    console.log(page);
     questionPage.style.display = "block";
     title.innerHTML = subjects[page].title;
     statement.innerHTML = subjects[page].statement;
 }
 
 function loadParties(){
+    document.getElementById('test').innerHTML = "";
     parties.forEach(party => {
-        document.getElementById('test').innerHTML += party.name;       
+        document.getElementById('test').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + party.name + '" class="choose-party w3-check"><label> ' + party.name + '</label></p>';       
     });
+}
+
+function loadResultsPage(){
+
 }
 
 function goToNextPage(answer){
     choices[page] = answer;
-    page++
-    console.log(subjects.length);
+    page++;
     if(page == subjects.length){
-        loadSelectParties();
+        loadSelectPartiesPage();
+    } else if(selectPartiesPage.style.display == "block"){
+        loadResultsPage();
     } else{
         loadStatement();
     }
@@ -68,7 +74,7 @@ function goToPreviousPage(){
     if(page == -1){
         loadIntro();
     } 
-    // else if(importantquestions == "block") {
+    // else if(importantQuestions == "block") {
     //    loadStatement()
     // } 
     else if(selectPartiesPage.style.display == "block"){
