@@ -22,6 +22,14 @@ body {
     color: #01B4DC;
 }
 
+.fnt-sz {
+    font-size: 10px;
+}
+
+#statement {
+    min-height: 60px;
+}
+
 #start {
     margin-top: 10px;
 }
@@ -34,6 +42,10 @@ body {
     display: none;
 }
 
+#important-statements {
+    display: none;
+}
+
 #parties {
     display: none;
 }
@@ -41,3 +53,5 @@ body {
 #back {
     display: none;
 }
+
+
