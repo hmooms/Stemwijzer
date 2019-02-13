@@ -1,10 +1,13 @@
 // #region variables / arrays
 var choices = [];
-var selectedStatements = [];
-var selectedParties = [];
+var selectedStatementsArray = [];
+var selectedPartiesArray = [];
+var selectedStatements = new Set();
+var selectedParties = new Set();
 var page;
 var title = document.getElementById('title');
 var statement = document.getElementById('statement');
+var inputs = document.getElementsByClassName('w3-check');
 // #endregion
 
 // #region page variables
@@ -26,6 +29,7 @@ var backbtn = document.getElementById('back');
 document.getElementById('start').addEventListener('click', start);
 document.getElementById('skip').addEventListener('click', function(){goToNextPage(0)});
 document.getElementById('go-to-parties').addEventListener('click', function(){submitToArray('statements')});
+document.getElementById('go-to-result').addEventListener('click', function(){submitToArray('parties')})
 backbtn.addEventListener('click', goToPreviousPage);
 agree.addEventListener('click', function(){goToNextPage('pro')});
 ambivalent.addEventListener('click', function(){goToNextPage('ambivalent')});
@@ -63,6 +67,26 @@ function loadStatements() {
     subjects.forEach(subject => {
         document.getElementById('statements').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + subject.title + '" class="w3-check"><label> ' + subject.title + '</label></p>';
     });
+    checkTheChecked('statements');
+}
+
+function checkTheChecked(array) {
+    console.log(selectedStatements.size, Array.from(selectedStatements))
+    for (i = 0; i < inputs.length; i++) {
+        for (a = 0; a < ((array == 'statements')? selectedStatements : selectedParties).size; a++) {
+            if(array == 'statements'){
+                selectedStatementsArray = Array.from(selectedStatements);
+                if (inputs[i].value == selectedStatementsArray[a]) {
+                    inputs[i].checked = true;
+                }
+            } else {
+                selectedPartiesArray = Array.from(selectedParties);
+                if (inputs[i].value == selectedPartiesArray[a]) {
+                    inputs[i].checked = true;
+                } 
+            }  
+        }
+    }
 }
 
 function loadSelectPartiesPage(){
@@ -73,14 +97,14 @@ function loadSelectPartiesPage(){
 
 function loadResultsPage(){
     selectPartiesPage.style.display = "none";
-    resultPage.style.display = "block";
+    resultsPage.style.display = "block";
 }
 
 function loadButtonColor() {
     ambivalent.classList.replace('w3-green', 'w3-grey');
     agree.classList.replace('w3-green', 'w3-grey');
     disagree.classList.replace('w3-green', 'w3-grey');
-    if (choices[page] == "pro" || "ambivalent" || "contra") {
+    if (choices[page] == "pro" || choices[page] == "ambivalent" || choices[page] ==  "contra") {
         document.getElementById(choices[page]).classList.add("w3-green");
         document.getElementById(choices[page]).classList.remove('w3-grey');
     }
@@ -91,13 +115,21 @@ function loadParties(){
     parties.forEach(party => {
         document.getElementById('select-parties').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + party.name + '" class="w3-check"><label> ' + party.name + ' (' + party.size + ')' + '</label></p>';       
     });
+    checkTheChecked('parties');
 }
 
+
 function submitToArray(array){
-    var inputs = document.getElementsByClassName('w3-check');
     for(i = 0; i < inputs.length; i++){
         if(inputs[i].checked){
-            ((array == "statements")? selectedStatements : selectedParties).push(inputs[i].value);
+            ((array == 'statements')? selectedStatements : selectedParties).add(inputs[i].value);
+        }        
+    }
+    if(array == 'parties'){
+        console.log(selectedParties);
+        if(selectedPartiesArray.length < 3){
+            alert('U moet er minstens 3 selecteren! you fucking cunt!');
+            return;
         }
     }
     goToNextPage();
@@ -130,6 +162,9 @@ function goToPreviousPage(){
     } else if(selectPartiesPage.style.display == "block"){
         selectPartiesPage.style.display = "none";
         loadSelectStatementsPage();
+    } else if(resultsPage.style.display == "block"){
+        resultsPage.style.display = "none";
+        loadSelectPartiesPage();
     } else{
         loadStatement();
     }

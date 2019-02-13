@@ -50,6 +50,10 @@ body {
     display: none;
 }
 
+#results {
+    display: none;
+}
+
 #back {
     display: none;
 }
