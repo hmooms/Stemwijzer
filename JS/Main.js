@@ -1,13 +1,10 @@
 // #region variables / arrays
 var choices = [];
-var selectedStatementsArray = [];
-var selectedPartiesArray = [];
-var selectedStatements = new Set();
-var selectedParties = new Set();
+var selectedStatements = [];
+var selectedParties = [];
 var page;
 var title = document.getElementById('title');
 var statement = document.getElementById('statement');
-var inputs = document.getElementsByClassName('w3-check');
 // #endregion
 
 // #region page variables
@@ -65,23 +62,23 @@ function loadSelectStatementsPage(){
 function loadStatements() {
     document.getElementById('statements').innerHTML = "";
     subjects.forEach(subject => {
-        document.getElementById('statements').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + subject.title + '" class="w3-check"><label> ' + subject.title + '</label></p>';
+        document.getElementById('statements').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + subject.title + '" class="w3-check statement"><label> ' + subject.title + '</label></p>';
     });
     checkTheChecked('statements');
 }
 
 function checkTheChecked(array) {
-    console.log(selectedStatements.size, Array.from(selectedStatements))
+    inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
+
+    console.log(selectedStatements, selectedParties)
     for (i = 0; i < inputs.length; i++) {
-        for (a = 0; a < ((array == 'statements')? selectedStatements : selectedParties).size; a++) {
+        for (a = 0; a < ((array == 'statements')? selectedStatements : selectedParties).length; a++) {
             if(array == 'statements'){
-                selectedStatementsArray = Array.from(selectedStatements);
-                if (inputs[i].value == selectedStatementsArray[a]) {
+                if (inputs[i].value == selectedStatements[a]) {
                     inputs[i].checked = true;
                 }
             } else {
-                selectedPartiesArray = Array.from(selectedParties);
-                if (inputs[i].value == selectedPartiesArray[a]) {
+                if (inputs[i].value == selectedParties[a]) {
                     inputs[i].checked = true;
                 } 
             }  
@@ -113,28 +110,30 @@ function loadButtonColor() {
 function loadParties(){
     document.getElementById('select-parties').innerHTML = "";
     parties.forEach(party => {
-        document.getElementById('select-parties').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + party.name + '" class="w3-check"><label> ' + party.name + ' (' + party.size + ')' + '</label></p>';       
+        document.getElementById('select-parties').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + party.name + '" class="w3-check party"><label> ' + party.name + ' (' + party.size + ')' + '</label></p>';       
     });
     checkTheChecked('parties');
 }
 
 
 function submitToArray(array){
+    inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
+    ((array == 'statements')? selectedStatements : selectedParties).length = 0;
+
     for(i = 0; i < inputs.length; i++){
         if(inputs[i].checked){
-            ((array == 'statements')? selectedStatements : selectedParties).add(inputs[i].value);
+            ((array == 'statements')? selectedStatements : selectedParties).push(inputs[i].value);
         }        
     }
     if(array == 'parties'){
-        console.log(selectedParties);
-        if(selectedPartiesArray.length < 3){
+        if(selectedParties.length < 3){
             alert('U moet er minstens 3 selecteren! you fucking cunt!');
             return;
         }
     }
     goToNextPage();
 }
- 
+
 function goToNextPage(answer){
     if(answer != null){
         choices[page] = answer;
