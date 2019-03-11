@@ -95,6 +95,7 @@ function loadSelectPartiesPage(){
 function loadResultsPage(){
     selectPartiesPage.style.display = "none";
     resultsPage.style.display = "block";
+    loadResult();
 }
 
 function loadButtonColor() {
@@ -139,7 +140,6 @@ function goToNextPage(answer){
         choices[page] = answer;
     }
     page++;
-    console.log(choices);
     if(page == subjects.length){
         loadSelectStatementsPage();
     } else if(selectImportantPage.style.display == "block"){
@@ -167,4 +167,13 @@ function goToPreviousPage(){
     } else{
         loadStatement();
     }
+}
+
+function loadResults(){
+
+}
+
+function calculateResult(){
+    array.forEach(element => {
+        answer / question * 100  });
 }
