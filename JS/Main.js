@@ -5,6 +5,7 @@ var selectedParties = [];
 var page;
 var title = document.getElementById('title');
 var statement = document.getElementById('statement');
+const big = 7;
 // #endregion
 
 // #region page variables
@@ -23,6 +24,11 @@ var backbtn = document.getElementById('back');
 // #endregion
 
 // #region event listeners
+document.getElementById('deselect-all-statements').onclick = function(){deselectAll('statements')};
+document.getElementById('deselect-all-parties').onclick = function(){deselectAll('parties')};
+document.getElementById('select-big-parties').onclick = function(){selectParties('big')};
+document.getElementById('select-all').onclick = function(){selectParties('all')};
+document.getElementById('select-secular').onclick = function(){selectParties('secular')};
 document.getElementById('start').addEventListener('click', start);
 document.getElementById('skip').addEventListener('click', function(){goToNextPage(0)});
 document.getElementById('go-to-parties').addEventListener('click', function(){submitToArray('statements')});
@@ -70,7 +76,6 @@ function loadStatements() {
 function checkTheChecked(array) {
     inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
 
-    console.log(selectedStatements, selectedParties)
     for (i = 0; i < inputs.length; i++) {
         for (a = 0; a < ((array == 'statements')? selectedStatements : selectedParties).length; a++) {
             if(array == 'statements'){
@@ -95,7 +100,7 @@ function loadSelectPartiesPage(){
 function loadResultsPage(){
     selectPartiesPage.style.display = "none";
     resultsPage.style.display = "block";
-    loadResult();
+    loadResults();
 }
 
 function loadButtonColor() {
@@ -116,6 +121,34 @@ function loadParties(){
     checkTheChecked('parties');
 }
 
+function deselectAll(type){
+    inputs = document.getElementsByClassName((type == 'statements')? 'statement' : 'party');
+    for(var i = 0; i < inputs.length; i++){
+        inputs[i].checked = false;
+    }
+}
+
+function selectParties(type){
+    inputs = document.getElementsByClassName("party");
+
+    for(var i = 0; i < parties.length; i++){
+        if(type == "secular"){
+            if(parties[i].secular == false){
+                inputs[i].checked = true;
+            } else{
+                inputs[i].checked = false;
+            }
+        } else if(type == "all"){
+            inputs[i].checked = true;
+        } else if(type == "big"){
+            if(parties[i].size >= big){
+                inputs[i].checked = true;    
+            } else{
+                inputs[i].checked = false;
+            }            
+        }
+    }
+}
 
 function submitToArray(array){
     inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
@@ -128,7 +161,7 @@ function submitToArray(array){
     }
     if(array == 'parties'){
         if(selectedParties.length < 3){
-            alert('U moet er minstens 3 selecteren! you fucking cunt!');
+            alert('U moet er minstens 3 selecteren');
             return;
         }
     }
@@ -170,10 +203,60 @@ function goToPreviousPage(){
 }
 
 function loadResults(){
+    var results = getResults();
 
+    document.getElementById("resultlist").innerHTML = "";
+
+    for (var i = 0; i < results.length; i++) {
+        document.getElementById("resultlist").innerHTML += "<h3>[" + results[i].name + "] = " + results[i].value + "%</h3><hr>";
+
+    }
 }
 
-function calculateResult(){
-    array.forEach(element => {
-        answer / question * 100  });
+function getResults(){
+    var calculatedParties =[];
+
+    for(var i = 0; i < parties.length; i++){
+        selectedParties.forEach(party => {
+            if(parties[i].name == party){
+                calculatedParties.push(new calculatedResult(parties[i]));
+            }
+        });
+    }
+
+    function calculatedResult(party){
+        this.name = party.name;
+        this.value = calculateResults(party);
+    }
+
+    calculatedParties.sort((a, b) => b.value - a.value);
+    return calculatedParties;
 }
+
+function calculateResults(thisParty){
+    sameAnswer = 0;
+    maxQuestions = subjects.length + selectedStatements.length;
+
+    for(var i = 0; i < subjects.length; i++){
+        if(choices[i] == 0){
+            maxQuestions--;
+        } else {
+            subjects[i].parties.forEach(party => {
+                if (party.name == thisParty.name){
+                    if (party.position == choices[i]) {
+                        sameAnswer++;
+                        for(var a = 0; a < selectedStatements.length; a++){
+                            if (subjects[i].title == selectedStatements[a]) {
+                                sameAnswer++;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    value = Math.round(sameAnswer / maxQuestions * 100);
+    
+    return value;
+}
+
