@@ -24,11 +24,11 @@ var backbtn = document.getElementById('back');
 // #endregion
 
 // #region event listeners
-document.getElementById('deselect-all-statements').onclick = function(){deselectAll('statements')};
-document.getElementById('deselect-all-parties').onclick = function(){deselectAll('parties')};
-document.getElementById('select-big-parties').onclick = function(){selectParties('big')};
-document.getElementById('select-all').onclick = function(){selectParties('all')};
-document.getElementById('select-secular').onclick = function(){selectParties('secular')};
+document.getElementById('deselect-all-statements').addEventListener('click', function(){deselectAll('statements')});
+document.getElementById('deselect-all-parties').addEventListener('click', function(){deselectAll('parties')});
+document.getElementById('select-big-parties').addEventListener('click', function(){selectParties('big')});
+document.getElementById('select-all').addEventListener('click', function(){selectParties('all')});
+document.getElementById('select-secular').addEventListener('click', function(){selectParties('secular')});
 document.getElementById('start').addEventListener('click', start);
 document.getElementById('skip').addEventListener('click', function(){goToNextPage(0)});
 document.getElementById('go-to-parties').addEventListener('click', function(){submitToArray('statements', 'next')});
@@ -93,7 +93,7 @@ function loadAllStatements() {
     subjects.forEach(subject => {
         document.getElementById('statements').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + subject.title + '" class="w3-check statement"><label> ' + subject.title + '</label></p>';
     });
-    checkTheChecked('statements');
+    checkTheCheckedCheckboxes('statements');
 }
 
 function loadSelectPartiesPage(){
@@ -111,23 +111,23 @@ function loadParties(){
     parties.forEach(party => {
         document.getElementById('select-parties').innerHTML += '<p class="w3-third"><input type="checkbox" value="' + party.name + '" class="w3-check party"><label> ' + party.name + ' (' + party.size + ')' + '</label></p>';       
     });
-    checkTheChecked('parties');
+    checkTheCheckedCheckboxes('parties');
 }
 
 /* 
- * the parameter is either statements or parties string
+ * the parameter is either statements or parties
  * At the select important statements or parties page:
  * checking the already selected checkboxes
  */
-function checkTheChecked(array) {
+function checkTheCheckedCheckboxes(arrayType) {
     // put the elements with the right class in array
-    inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
+    inputs = document.getElementsByClassName((arrayType == 'statements')? 'statement' : 'party');
 
     for (i = 0; i < inputs.length; i++) {
 
         // loop over either the slectedStatements or selectedParties array 
-        for (a = 0; a < ((array == 'statements')? selectedStatements : selectedParties).length; a++) {
-            if(array == 'statements'){
+        for (a = 0; a < ((arrayType == 'statements')? selectedStatements : selectedParties).length; a++) {
+            if(arrayType == 'statements'){
                 // if it was added to the array it means it was checked
                 if (inputs[i].value == selectedStatements[a]) {
                     inputs[i].checked = true;
@@ -183,18 +183,18 @@ function selectParties(type){
 /* 
  * array parameter is eiter statements or parties, direction parameter is next or null
  */
-function submitToArray(array, direction){
-    inputs = document.getElementsByClassName((array == 'statements')? 'statement' : 'party');
+function submitToArray(arrayType, direction){
+    inputs = document.getElementsByClassName((arrayType == 'statements')? 'statement' : 'party');
 
-    ((array == 'statements')? selectedStatements : selectedParties).length = 0; // resets array in order to avoid getting doubles
+    ((arrayType == 'statements')? selectedStatements : selectedParties).length = 0; // resets array in order to avoid getting doubles
     
     for(i = 0; i < inputs.length; i++){
         if(inputs[i].checked){
-            ((array == 'statements')? selectedStatements : selectedParties).push(inputs[i].value);
+            ((arrayType == 'statements')? selectedStatements : selectedParties).push(inputs[i].value);
         }        
     }
     // if you go to previous page you don't need to select 3 only when you go to next page
-    if(array == 'parties' && direction == 'next'){
+    if(arrayType == 'parties' && direction == 'next'){
         if(selectedParties.length < 3){
             alert('U moet er minstens 3 selecteren');
             return;
@@ -297,7 +297,7 @@ function getResults(){
 class Party {
     constructor(party) {
         this.name = party.name;
-        this.value = this.calculateMatch(party);
+        this.value = this.calculateMatch();
     }
 
     /*
