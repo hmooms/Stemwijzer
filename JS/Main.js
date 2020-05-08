@@ -182,7 +182,7 @@ function selectParties(type){
 
 /* 
  * array parameter is eiter statements or parties, direction parameter is next or null
- */
+ */ 
 function submitToArray(arrayType, direction){
     inputs = document.getElementsByClassName((arrayType == 'statements')? 'statement' : 'party');
 
